@@ -59,6 +59,7 @@ void NaryTree::insert(vector<string> values){
     TreeNode* curr = root;
     for(int i = 0; i < values.size(); i++){
         string val = values[i];
+        transform(val.begin(), val.end(), val.begin(), ::toupper);
         if(curr->children.find(val) == curr->children.end()){
             curr->children[val] = new TreeNode(val);
             curr->data++;
@@ -196,6 +197,7 @@ void NaryTree::printBFSTraversal(){
 void NaryTree::printDFSTraversal(){
     cout << "Print Preorder Traversal:" << endl;
     dfsHelper(root);
+    cout << endl;
     return;
 }
 
