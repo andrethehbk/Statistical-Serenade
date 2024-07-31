@@ -22,7 +22,7 @@ private:
     TreeNode* trivia_nodes[3];
     
     void getBFSLevel(queue<TreeNode*>& list);
-    TreeNode* searchBFSLevel(queue<TreeNode*>& list);
+    TreeNode* searchBFSLevel(queue<TreeNode*>& list, string val);
     void getAndPrintBFSLevel(queue<TreeNode*>& list);
     void dfsHelper(TreeNode* node);
     void deleteHelper(TreeNode* node);
@@ -31,6 +31,9 @@ public:
     NaryTree();
     ~NaryTree();
     void insert(vector<string> values);
+    void removeArtist(string artist);
+    void removeAlbum(string album);
+    void removeTrack(string track);
     void printBFSTraversal();
     void printDFSTraversal();
     void printTrivia();
@@ -69,6 +72,79 @@ void NaryTree::insert(vector<string> values){
     }
     curr->data++;
     return;
+}
+
+void NaryTree::removeArtist(string artist){
+    transform(artist.begin(), artist.end(), artist.begin(), ::toupper);
+    queue<TreeNode*> level;
+    level.push(root);
+    TreeNode* to_remove = searchBFSLevel(level, artist);
+    if(to_remove == nullptr){
+        cout << artist << " not in dataset." << endl;
+        return;
+    }
+    level.front()->data--;
+    level.front()->children.erase(artist);
+    deleteHelper(to_remove);
+    cout << "Removed " << artist << " from dataset." << endl;
+    return;
+}
+
+void NaryTree::removeAlbum(string album){
+    transform(album.begin(), album.end(), album.begin(), ::toupper);
+    queue<TreeNode*> level;
+    level.push(root);
+    getBFSLevel(level);
+    TreeNode* to_remove = searchBFSLevel(level, album);
+    if(to_remove == nullptr){
+        cout << album << " not in dataset." << endl;
+        return;
+    }
+    while(to_remove != nullptr){
+        level.front()->data--;
+        level.front()->children.erase(album);
+        deleteHelper(to_remove);
+        cout << "Removed " << album << "by " << level.front()->name_ID << endl;
+        level.pop();
+        to_remove = searchBFSLevel(level, album);
+    }
+    return;
+}
+
+void NaryTree::removeTrack(string track){
+    transform(track.begin(), track.end(), track.begin(), ::toupper);
+    queue<TreeNode*> level;
+    level.push(root);
+    getBFSLevel(level);
+    getBFSLevel(level);
+    TreeNode* to_remove = searchBFSLevel(level, track);
+    if(to_remove == nullptr){
+        cout << track << " not in dataset." << endl;
+        return;
+    }
+    while(to_remove != nullptr){
+        level.front()->data--;
+        level.front()->children.erase(track);
+        deleteHelper(to_remove);
+        cout << "Removed " << track << "from " << level.front()->name_ID << endl;
+        level.pop();
+        to_remove = searchBFSLevel(level, track);
+    }
+    return;
+}
+
+TreeNode* NaryTree::searchBFSLevel(queue<TreeNode*>& list, string val){
+    int size = list.size();
+    for(int i = 0; i < size; i++){
+        TreeNode* curr = list.front();
+        for(auto iter = curr->children.begin(); iter != curr->children.end(); iter++){
+            if(iter->second->name_ID == val){
+                return iter->second;
+            }
+        }
+        list.pop();
+    }
+    return nullptr;
 }
 
 void NaryTree::getBFSLevel(queue<TreeNode*>& list){
