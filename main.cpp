@@ -8,15 +8,14 @@ using namespace std;
 //g++ -std=c++14 -o main.out main.cpp
 
 void printOptions(){
-    cout << "========================" << endl;
-    cout << "[1] Print BFS Traversal" << endl;
-    cout << "[2] Print DFS Traversal" << endl;
-    cout << "[3] Display Trivia" << endl;
-    cout << "[4] Remove Artist" << endl;
-    cout << "[5] Remove Album" << endl;
-    cout << "[6] Remove Track" << endl;
-    cout << "[7] Exit Program" << endl;
-    cout << "========================" << endl;
+    cout << "===============================" << endl;
+    cout << "[1] Compare BFS & DFS Traversal" << endl;
+    cout << "[2] Display Trivia" << endl;
+    cout << "[3] Remove Artist" << endl;
+    cout << "[4] Remove Album" << endl;
+    cout << "[5] Remove Track" << endl;
+    cout << "[6] Exit Program" << endl;
+    cout << "===============================" << endl;
     cout << "Please Enter a Number: ";
 }
 
@@ -68,7 +67,7 @@ int main(){
 
     data_file.close();
     int input = 0;
-    while(input != 7){
+    while(input != 6){
         string temp;
         printOptions();
         getline(cin, temp);
@@ -76,25 +75,32 @@ int main(){
             cout << "Invalid Input." << endl;
         }
         else if(input == 1){
-            data.printBFSTraversal();
+            cout << "Please Enter Number of Nodes to Visit: ";
+            int number = 0;
+            getline(cin, temp);
+            
+            if(verifyInt(temp, number) && number > 0){
+                data.printBFSTraversal(number);
+                data.printDFSTraversal(number);
+            }
+            else{
+                cout << "Invalid Number." << endl;
+            }
         }
         else if(input == 2){
-            data.printDFSTraversal();
-        }
-        else if(input == 3){
             data.printTrivia();
         }
-        else if(input == 4){
+        else if(input == 3){
             cout << "Enter Artist (not case sensitive):" << endl;
             getline(cin, temp);
             data.removeArtist(temp);
         }
-        else if(input == 5){
+        else if(input == 4){
             cout << "Enter Album (not case sensitive):" << endl;
             getline(cin, temp);
             data.removeAlbum(temp);
         }
-        else if(input == 6){
+        else if(input == 5){
             cout << "Enter Track (not case sensitive):" << endl;
             getline(cin, temp);
             data.removeTrack(temp);
