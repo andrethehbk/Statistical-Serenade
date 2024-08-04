@@ -23,8 +23,8 @@ private:
     
     void getBFSLevel(queue<TreeNode*>& list);
     TreeNode* searchBFSLevel(queue<TreeNode*>& list, string val);
-    void getAndPrintBFSLevel(queue<TreeNode*>& list);
-    void dfsHelper(TreeNode* node);
+    void getAndPrintBFSLevel(queue<TreeNode*>& list, int &nodes);
+    void dfsHelper(TreeNode* node, int &nodes);
     void deleteHelper(TreeNode* node);
     void printNode(TreeNode* node, string pre, string sub);
     void recalcMax(queue<TreeNode*>& level, int start);
@@ -36,8 +36,8 @@ public:
     void removeArtist(string artist);
     void removeAlbum(string album);
     void removeTrack(string track);
-    void printBFSTraversal();
-    void printDFSTraversal();
+    void printBFSTraversal(int nodes);
+    void printDFSTraversal(int nodes);
     void printTrivia();
 };
 
@@ -195,7 +195,7 @@ void NaryTree::getBFSLevel(queue<TreeNode*>& list){
     return;
 }
 
-void NaryTree::getAndPrintBFSLevel(queue<TreeNode*>& list){
+void NaryTree::getAndPrintBFSLevel(queue<TreeNode*>& list, int &nodes){
     // Prints Current Level's Children and Progresses Queue to Next Level in Depth
     int size = list.size();
     string pre = "";
@@ -204,7 +204,11 @@ void NaryTree::getAndPrintBFSLevel(queue<TreeNode*>& list){
         TreeNode* curr = list.front();
         for(auto iter = curr->children.begin(); iter != curr->children.end(); iter++){
             list.push(iter->second);
+            if(nodes <= 0){
+                return;
+            }
             printNode(iter->second, pre, sub);
+            nodes--;
             pre = ", ";
         }
         list.pop();
@@ -212,34 +216,32 @@ void NaryTree::getAndPrintBFSLevel(queue<TreeNode*>& list){
     return;
 }
 
-void NaryTree::printBFSTraversal(){
-    
+void NaryTree::printBFSTraversal(int nodes){
     queue<TreeNode*> level;
     level.push(root);
-    cout << "User:" << endl;
-    printNode(root, "", "");
-    cout << endl;
+    cout << "Print Breath First Search:" << endl;
+    printNode(root, "", ", ");
+    nodes--;
+    
+    getAndPrintBFSLevel(level, nodes);
+    if(nodes == 0){
+        cout << endl;
+        return;
+    }
+    getAndPrintBFSLevel(level, nodes);
+    if(nodes == 0){
+        cout << endl;
+        return;
+    }
+    getAndPrintBFSLevel(level, nodes);
 
-    cout << "Print Artists:" << endl;
-    getAndPrintBFSLevel(level);
     cout << endl;
-    cout << level.size() << " Artists" << endl;
-
-    cout << "Print Albums:" << endl;
-    getAndPrintBFSLevel(level);
-    cout << endl;
-    cout << level.size() << " Albums" << endl;
-
-    cout << "Print Tracks:" << endl;
-    getAndPrintBFSLevel(level);
-    cout << endl;
-    cout << level.size() << " Tracks" << endl;
     return;
 }
 
-void NaryTree::printDFSTraversal(){
+void NaryTree::printDFSTraversal(int nodes){
     cout << "Print Preorder Traversal:" << endl;
-    dfsHelper(root);
+    dfsHelper(root, nodes);
     cout << endl;
     return;
 }
@@ -257,13 +259,17 @@ void NaryTree::printTrivia(){
     return;
 }
 
-void NaryTree::dfsHelper(TreeNode* node){
+void NaryTree::dfsHelper(TreeNode* node, int &nodes){
+    if(nodes <= 0){
+        return;
+    }
     printNode(node, "", ", ");
+    nodes--;
     if(node->children.size() == 0){
         return;
     }
     for(auto iter = node->children.begin(); iter != node->children.end(); iter++){
-        dfsHelper(iter->second);
+        dfsHelper(iter->second, nodes);
     }
     return;
 }
