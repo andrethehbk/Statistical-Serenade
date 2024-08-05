@@ -19,7 +19,7 @@ void printOptions(){
     cout << "Please Enter a Number: ";
 }
 
-bool verifyInt(string number, int &value){
+bool verifyInt(const string& number, int &value){
     //Verify String is valid Input
     regex verify = regex("[0-9]*");
     if(regex_match(number, verify)){
