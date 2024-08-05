@@ -4,16 +4,17 @@
 #include <queue>
 #include <iostream>
 #include <utility>
-
 using namespace std;
 
 struct TreeNode {
     string name_ID;
     int data;
+    string time;
     unordered_map<string, TreeNode*> children;
     explicit TreeNode(string val){
         name_ID = std::move(val);
         data = 0;
+        time = "";
     }
 };
 
@@ -34,7 +35,7 @@ private:
 public:
     NaryTree();
     ~NaryTree();
-    void insert(vector<string> values);
+    void insert(vector<string> values, string time);
     void removeArtist(string artist);
     void removeAlbum(string album);
     void removeTrack(string track);
@@ -57,12 +58,12 @@ NaryTree::~NaryTree(){
     deleteHelper(root);
 }
 
-void NaryTree::insert(vector<string> values){
+void NaryTree::insert(vector<string> values, string time){
     /*
-        This method inserts value nodes into N-ary tree. Levels are structured as User->Artist->Album->Track,
+        This method inserts value nodes into N-ary tree. Levels are structured as User->Artist->Album->Track->DatesListened,
         if a node does not exist at the appropriate level, it is added as a child to a parent node.
     */
-    //Invalid Input
+    // Invalid input error handling
     if(values.size() != 3){
         cout << "Error in data" << endl;
         return;
@@ -72,13 +73,14 @@ void NaryTree::insert(vector<string> values){
         string val = values[i];
         transform(val.begin(), val.end(), val.begin(), ::toupper);
         if(curr->children.find(val) == curr->children.end()){
-            curr->children[val] = new TreeNode(val);
+            auto temp = new TreeNode(val);
+            curr->children[val] = temp;
             curr->data++;
             if(trivia_values[i] < curr->data){
                 trivia_values[i] = curr->data;
                 trivia_nodes[i] = curr;
             }
-
+            delete temp; // avoid memory leaks
         }
         curr = curr->children[val];
     }
@@ -276,7 +278,7 @@ void NaryTree::deleteHelper(TreeNode* node) {
     }
     delete node;
 }
-    
+
 void NaryTree::printNode(TreeNode* node, string pre, string sub){
     cout << pre << node->name_ID << sub;
 }
