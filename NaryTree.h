@@ -3,14 +3,15 @@
 #include <unordered_map>
 #include <queue>
 #include <iostream>
+#include <utility>
 using namespace std;
 
 struct TreeNode {
     string name_ID;
     int data;
     unordered_map<string, TreeNode*> children;
-    TreeNode(string val){
-        name_ID = val;
+    explicit TreeNode(string val){
+        name_ID = std::move(val);
         data = 0;
     }
 };
@@ -20,7 +21,7 @@ private:
     TreeNode* root;
     int trivia_values[4];
     TreeNode* trivia_nodes[4];
-    
+
     void getBFSLevel(queue<TreeNode*>& list);
     TreeNode* searchBFSLevel(queue<TreeNode*>& list, string val);
     void getAndPrintBFSLevel(queue<TreeNode*>& list, int &nodes);
@@ -76,7 +77,7 @@ void NaryTree::insert(vector<string> values){
                 trivia_values[i] = curr->data;
                 trivia_nodes[i] = curr;
             }
-            
+
         }
         curr = curr->children[val];
     }
@@ -85,7 +86,6 @@ void NaryTree::insert(vector<string> values){
         trivia_values[3] = curr->data;
         trivia_nodes[3] = curr;
     }
-    return;
 }
 
 void NaryTree::removeArtist(string artist){
@@ -107,7 +107,6 @@ void NaryTree::removeArtist(string artist){
     cout << "Removed " << artist << " from dataset." << endl;
 
     recalcMax(temp, 0);
-    return;
 }
 
 void NaryTree::removeAlbum(string album){
@@ -135,7 +134,6 @@ void NaryTree::removeAlbum(string album){
     }
 
     recalcMax(temp, 1);
-    return;
 }
 
 void NaryTree::removeTrack(string track){
@@ -164,7 +162,6 @@ void NaryTree::removeTrack(string track){
     }
 
     recalcMax(temp, 2);
-    return;
 }
 
 TreeNode* NaryTree::searchBFSLevel(queue<TreeNode*>& list, string val){
@@ -172,9 +169,9 @@ TreeNode* NaryTree::searchBFSLevel(queue<TreeNode*>& list, string val){
     int size = list.size();
     for(int i = 0; i < size; i++){
         TreeNode* curr = list.front();
-        for(auto iter = curr->children.begin(); iter != curr->children.end(); iter++){
-            if(iter->second->name_ID == val){
-                return iter->second;
+        for(auto & iter : curr->children){
+            if(iter.second->name_ID == val){
+                return iter.second;
             }
         }
         list.pop();
@@ -187,12 +184,11 @@ void NaryTree::getBFSLevel(queue<TreeNode*>& list){
     int size = list.size();
     for(int i = 0; i < size; i++){
         TreeNode* curr = list.front();
-        for(auto iter = curr->children.begin(); iter != curr->children.end(); iter++){
-            list.push(iter->second);
+        for(auto & iter : curr->children){
+            list.push(iter.second);
         }
         list.pop();
     }
-    return;
 }
 
 void NaryTree::getAndPrintBFSLevel(queue<TreeNode*>& list, int &nodes){
@@ -213,7 +209,6 @@ void NaryTree::getAndPrintBFSLevel(queue<TreeNode*>& list, int &nodes){
         }
         list.pop();
     }
-    return;
 }
 
 void NaryTree::printBFSTraversal(int nodes){
@@ -222,7 +217,7 @@ void NaryTree::printBFSTraversal(int nodes){
     cout << "Print Breath First Search:" << endl;
     printNode(root, "", ", ");
     nodes--;
-    
+
     getAndPrintBFSLevel(level, nodes);
     if(nodes == 0){
         cout << endl;
@@ -236,14 +231,12 @@ void NaryTree::printBFSTraversal(int nodes){
     getAndPrintBFSLevel(level, nodes);
 
     cout << endl;
-    return;
 }
 
 void NaryTree::printDFSTraversal(int nodes){
     cout << "Print Preorder Traversal:" << endl;
     dfsHelper(root, nodes);
     cout << endl;
-    return;
 }
 
 void NaryTree::printTrivia(){
@@ -256,7 +249,6 @@ void NaryTree::printTrivia(){
     cout << "Artist with Most Albums: " << trivia_nodes[1]->name_ID << " (" <<trivia_values[1] << " Albums)" << endl;
     cout << "Album with Most Tracks: " << trivia_nodes[2]->name_ID << " (" <<trivia_values[2] << " Tracks)" << endl;
     cout << "Track with Most Plays: " << trivia_nodes[3]->name_ID << " (" <<trivia_values[3] << " Plays)" << endl;
-    return;
 }
 
 void NaryTree::dfsHelper(TreeNode* node, int &nodes){
@@ -265,40 +257,38 @@ void NaryTree::dfsHelper(TreeNode* node, int &nodes){
     }
     printNode(node, "", ", ");
     nodes--;
-    if(node->children.size() == 0){
+    if(node->children.empty()){
         return;
     }
-    for(auto iter = node->children.begin(); iter != node->children.end(); iter++){
-        dfsHelper(iter->second, nodes);
+    for(auto & iter : node->children){
+        dfsHelper(iter.second, nodes);
     }
-    return;
 }
 
-void NaryTree::deleteHelper(TreeNode* node){
-    if(node->children.size() == 0){
+void NaryTree::deleteHelper(TreeNode* node) {
+    if (node->children.empty()) {
         delete node;
         return;
     }
-    for(auto iter = node->children.begin(); iter != node->children.end(); iter++){
-        deleteHelper(iter->second);
+    for (auto &iter: node->children) {
+        deleteHelper(iter.second);
     }
     delete node;
-    return;
 }
-
+    
 void NaryTree::printNode(TreeNode* node, string pre, string sub){
     cout << pre << node->name_ID << sub;
-    return;
 }
-void NaryTree::recalcMax(queue<TreeNode*> &list, int start){
+
+void NaryTree::recalcMax(queue<TreeNode *> &level, int start) {
     for(int i = start; i < 4; i++){
         trivia_values[i] = 0;
         trivia_nodes[i] = nullptr;
-        recalcMaxHelper(list, i);
+        recalcMaxHelper(level, i);
     }
-    return;
 }
-void NaryTree::recalcMaxHelper(queue<TreeNode*> &list, int index){
+
+void NaryTree::recalcMaxHelper(queue<TreeNode *> &list, int index) {
     // Progresses Queue to Next Level in Depth
     int size = list.size();
     for(int i = 0; i < size; i++){
@@ -307,10 +297,10 @@ void NaryTree::recalcMaxHelper(queue<TreeNode*> &list, int index){
             trivia_values[index] = curr->data;
             trivia_nodes[index] = curr;
         }
-        for(auto iter = curr->children.begin(); iter != curr->children.end(); iter++){
-            list.push(iter->second);
+        for(auto & iter : curr->children){
+            list.push(iter.second);
         }
         list.pop();
     }
-    return;
 }
+
