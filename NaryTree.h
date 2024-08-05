@@ -4,17 +4,17 @@
 #include <queue>
 #include <iostream>
 #include <utility>
+
 using namespace std;
 
 struct TreeNode {
     string name_ID;
     int data;
-    string time;
+    vector<string> timestamps;
     unordered_map<string, TreeNode*> children;
     explicit TreeNode(string val){
         name_ID = std::move(val);
         data = 0;
-        time = "";
     }
 };
 
@@ -85,6 +85,7 @@ void NaryTree::insert(vector<string> values, string time){
         curr = curr->children[val];
     }
     curr->data++;
+    curr->timestamps.push_back(time);
     if(trivia_values[3] < curr->data){
         trivia_values[3] = curr->data;
         trivia_nodes[3] = curr;
@@ -280,7 +281,11 @@ void NaryTree::deleteHelper(TreeNode* node) {
 }
 
 void NaryTree::printNode(TreeNode* node, string pre, string sub){
-    cout << pre << node->name_ID << sub;
+    cout << pre << node->name_ID << " (";
+    for (const string& time : node->timestamps) {
+        cout << time << " ";
+    }
+    cout << ")" << sub;
 }
 
 void NaryTree::recalcMax(queue<TreeNode *> &level, int start) {
