@@ -31,7 +31,7 @@ bool verifyInt(const string& number, int &value){
 int main(){
     // Create N-ary Tree Using Database in txt file
     NaryTree data;
-    ifstream data_file("copyAndreSData.txt");
+    ifstream data_file("andreSpotifyData.txt");
     if(!data_file.is_open()){
         cout << "Error." << endl;
         return 0;
